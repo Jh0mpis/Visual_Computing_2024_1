@@ -13,7 +13,10 @@ function draw() {
   player.render();
   player.update();
   pop()
+  push();
   translate(player.pos.x, player.pos.y);
+  //draw world
+  pop();
 }
 
 function keyPressed(){
@@ -48,7 +51,7 @@ class Player{
     constructor(){
       this.pos = createVector(width/2, height/2);
       this.size= 30;
-      this.vel = 10;
+      this.vel = 1;
       this.angle = 360;
       this.points = 0;
       this.lifes = 3;
@@ -62,12 +65,13 @@ class Player{
        translate(width/2, height/2)
        rotate(this.angle*PI/180);
        rect(0, 0, this.size+20*30/this.size, this.size);
+       //draw bullet
        pop();
     }
     
     update(){
-       this.pos.x += this.vel*Math.cos(this.angle*PI/180);
-       this.pos.y += this.vel*Math.sin(this.angle*PI/180);
+       this.pos.x -= this.vel*Math.cos(this.angle*PI/180);
+       this.pos.y -= this.vel*Math.sin(this.angle*PI/180);
        this.update_angle();
     }
     
@@ -111,7 +115,7 @@ class Player{
     }
 }
 
-class Shoot{
+class Bullet{
   constructor(angle){
     this.angle = angle;
     this.pos = createVector(0 , 0);
