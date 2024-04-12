@@ -1,12 +1,11 @@
-let player, counts = 0, max_enemies = 5, num_clouds = 10, level;
+let player, counts = 0, max_enemies = 5, num_clouds = 15;
 let font, heart, explosion_image, cloud_img;
 const k = 0.00001;
-const bullets = new Array();
-const enemies = new Array();
-const player_imgs = new Array(), enemy_imgs = new Array(),  bullet_imgs = new Array();
-
+var bullets = new Array();
+var enemies = new Array();
 let clouds = new Array();
 
+const player_imgs = new Array(), enemy_imgs = new Array(),  bullet_imgs = new Array();
 
 function preload(){
   font = loadFont('ARCADEPI.TTF');
@@ -28,86 +27,53 @@ function setup() {
   createCanvas(720, 960);
   rectMode(CENTER);
   imageMode(CENTER);
-  player = new Player(player_imgs, bullet_imgs);
   
-  for(let i = 0; i< num_clouds; i++){
-    let size = random(30, 80)
-    clouds[i] = new Array(random(-width/2, width/2), random(-height/2, height/2), size);
-  }
+    game = new Game();
 }
 
 
 function draw() {
-  background(0, 0, 60);
- 
-  for(const bullet in bullets){
-    bullets[bullet].update(player.angle);
-    bullets[bullet].render();
-  }
- 
-  push()
-  player.render();
-  player.update();
-  pop()
-  for(let enemy in enemies){
-    enemies[enemy].render();
-    enemies[enemy].update();
-    for(const bullet in bullets){
-      bullets[bullet].check_collitions(enemies[enemy], player);
-    }
-  }
-  
-  push();
-  translate(player.pos.x, player.pos.y);
-  for(let cloud in clouds){
-    image(cloud_img,clouds[cloud][0],clouds[cloud][1], 2*clouds[cloud][2], clouds[cloud][2]);
-    
-  }
-  
-  //fill(0);
-  //console.log(clouds[0][0]-player.pos.x, clouds[0][1]-player.pos.x);
-  //ellipse(clouds[0][0],clouds[0][1],20,20);
-  //fill(255);
-  if(counts<=100){
-    counts++;
+  if(game.is_game_over){
+    game.game_over();
+  }else if(!game.is_paused){
+    game.update();
   }else{
-    counts = 0;
-    if(enemies.length<max_enemies+level){
-      enemies.push(new Enemy(k*random(1,2), k*random(1,2), enemy_imgs, explosion_image));
-    }
+    game.pause();
   }
-  console.log(enemies.length);
-  pop();
-  
-  level = Math.floor(player.points/10000);
-  draw_data(player, level);
 }
 
 function keyPressed(){
    if(keyCode === UP_ARROW){
-      player.set_number(3);
-      player.pressed[3] = true;
+      game.player.set_number(3);
+      game.pressed[3] = true;
    }else if(keyCode === RIGHT_ARROW){
-      player.set_number(4);
-      player.pressed[0] = true;
+      game.player.set_number(4);
+      game.pressed[0] = true;
    }else if(keyCode === LEFT_ARROW){
-      player.set_number(2);
-      player.pressed[2] = true;
+      game.player.set_number(2);
+      game.pressed[2] = true;
    }else if(keyCode === DOWN_ARROW){
-      player.set_number(1);
-      player.pressed[1] = true;
+      game.player.set_number(1);
+      game.pressed[1] = true;
+   }else if(keyCode === ESCAPE){
+     game.is_paused = !game.is_paused;
+   }else if(keyCode === ENTER){
+     if(game.is_game_over){
+        game.is_game_over = false;
+        game.restart();
+     }
    }
 }
 
 function keyReleased(){
    if(keyCode === UP_ARROW){
-      player.pressed[3] = false;
+      game.pressed[3] = false;
    }else if(keyCode === RIGHT_ARROW){
-      player.pressed[0] = false;
+      game.pressed[0] = false;
    }else if(keyCode === LEFT_ARROW){
-      player.pressed[2] = false;
+      game.pressed[2] = false;
    }else if(keyCode === DOWN_ARROW){
-      player.pressed[1] = false;
+      game.pressed[1] = false;
    }
 }
 
@@ -117,7 +83,7 @@ function draw_data(player, level){
   rect(width/2, 50, width, 100);
   rect(width/2, height-20, width, 40);
   fill(0, 255, 0);
-  rect(width/2, height-20, (width-40)*(player.points-level*10000)/10000, 20);
+  rect(width/2, height-20, (width-40)*(player.points-level*5000)/5000, 20);
   fill(255);
   textSize(32);
   textFont(font);
@@ -138,6 +104,116 @@ function draw_data(player, level){
   pop();
 }
 
+class Game{
+  constructor(){
+    this.player = new Player(player_imgs, bullet_imgs);
+    this.is_game_over = false;
+    this.is_paused = false;
+    for(let i = 0; i< num_clouds; i++){
+      let size = random(30, 80)
+      clouds[i] = new Array(random(-width/2, width/2), random(-height/2, height/2), size);
+    }
+    
+    this.level = 0;
+    this.pressed = [false, false, false, false]
+  }
+  
+  update(){
+    if(this.player.lifes === 0){
+      this.is_game_over = true;
+    }
+    background(0, 0, 60);
+    
+    for(let cloud in clouds){
+     if(clouds[cloud][2]<=55){
+        image(cloud_img,clouds[cloud][0]+this.player.pos.x,clouds[cloud][1]+this.player.pos.y, 2*clouds[cloud][2], clouds[cloud][2]);
+     }
+    }
+    
+    for(const bullet in bullets){
+      bullets[bullet].update(this.player.angle);
+      bullets[bullet].render();
+    }
+   
+    push()
+    this.player.render();
+    this.player.update(this.pressed);
+    pop()
+    for(let enemy in enemies){
+      enemies[enemy].render();
+      enemies[enemy].update();
+      enemies[enemy].check_collision(this.player);
+      for(const bullet in bullets){
+        bullets[bullet].check_collitions(enemies[enemy], this.player);
+      }
+    }
+    
+    for(let cloud in clouds){
+      if(clouds[cloud][2] > 55){
+        image(cloud_img,clouds[cloud][0]+this.player.pos.x,clouds[cloud][1]+this.player.pos.y, 2*clouds[cloud][2], clouds[cloud][2]);
+       }
+      if(clouds[cloud][0]+this.player.pos.x < -clouds[cloud][2]){
+        clouds[cloud][0] += width +2*clouds[cloud][2];
+      }else if(clouds[cloud][0]+this.player.pos.x > width+clouds[cloud][2]){
+        clouds[cloud][0] -= width +2*clouds[cloud][2];
+      }
+      if(clouds[cloud][1]+this.player.pos.y < -clouds[cloud][2]/2){
+        clouds[cloud][1] += height+clouds[cloud][2]/2;
+      }else if(clouds[cloud][1]+this.player.pos.y > height+clouds[cloud][2]/2){
+        clouds[cloud][1] -= height+clouds[cloud][2];
+      }
+    }
+    
+    push();
+    translate(this.player.pos.x, this.player.pos.y);
+    
+    if(counts<=100){
+      counts++;
+    }else{
+      counts = 0;
+      if(enemies.length<max_enemies+this.level){
+        enemies.push(new Enemy(k*random(1,2), k*random(1,2), enemy_imgs, explosion_image));
+      }
+    }
+    
+    pop();
+    
+    this.level = Math.floor(this.player.points/5000);
+    draw_data(this.player, this.level);
+  }
+  
+  pause(){
+    fill(128, 128, 128, 10);
+    rect(width/2, height/2, width, 200);
+    fill(Math.floor(Math.abs(2*sin(frameCount/20)))*255);
+    textSize(32);
+    textFont(font);
+    textAlign(CENTER);
+    text('PAUSE', width/2, height/2+16);
+  }
+  
+  game_over(){
+    background(0);
+    fill(255,0,0);
+    textSize(32);
+    textFont(font);
+    textAlign(CENTER);
+    text('GAME OVER :C', width/2, height/2);
+    fill(255);
+    text('PRESS ENTER TO RESTART', width/2, height/2+34);
+  }
+  
+  restart(){
+    this.player.lifes = 3;
+    this.player.pos = createVector(width/2, height/2);
+    this.player.angle = 360;
+    this.player.points = 0;
+    this.level = 0;
+    bullets = [];
+    enemies = [];
+  }
+}
+
 class Player{
     constructor(imgs, bullet_imgs){
       this.pos = createVector(width/2, height/2);
@@ -148,9 +224,7 @@ class Player{
       this.lifes = 3;
       this.number = 4;
       this.angular_vel = 5;
-      this.pressed = [false, false, false, false]
       this.count  = 0;
-      this.num_of_bullets = 0;
       this.imgs = imgs;
       this.count_frames = 0;
       this.bullet_imgs = bullet_imgs;
@@ -160,7 +234,6 @@ class Player{
        push();
        translate(width/2, height/2)
        rotate(this.angle*PI/180);
-       //rect(0, 0, this.size+20*30/this.size, this.size);
        if(this.count_frames<59.4){
          this.count_frames += 0.5;
        }else{
@@ -170,12 +243,12 @@ class Player{
        pop();
     }
    
-    update(){
+    update(pressed){
        this.pos.x -= this.vel*Math.cos(this.angle*PI/180);
        this.pos.y -= this.vel*Math.sin(this.angle*PI/180);
-       this.update_angle();
+       this.update_angle(pressed);
      
-      if(this.num_of_bullets<25){
+      if(bullets.length<25){
         if(this.count<10){
           this.count ++;
         }else{
@@ -186,8 +259,8 @@ class Player{
       }
     }
    
-    update_angle(){
-      if(!this.pressed[(4+this.number)%4]){return;}
+    update_angle(pressed){
+      if(!pressed[(4+this.number)%4]){return;}
       if(this.angle>270 && this.number ==1){
         this.number = 5;
       }
@@ -338,6 +411,16 @@ class Enemy{
     this.animation.pos.y = this.pos.y;
     this.reset();
     this.is_death = true;
+  }
+  
+  check_collision(player){
+    const x = this.pos.x-width/2;
+    const y = this.pos.y-height/2;
+    
+    if(Math.abs(x)<player.size && Math.abs(y)<player.size){
+      this.death();
+      player.lifes -= 1;
+    }
   }
 }
 
