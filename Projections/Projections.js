@@ -3,13 +3,15 @@ var projector, pentachoron, tesseract;
 let figures, index;
 
 function setup() {
-  createCanvas(680, 480, WEBGL);
+  createCanvas(680, 680, WEBGL);
   projector = new Projector();
   pentachoron = new Pentachoron(height/2-50);
   tesseract = new Tesseract(height/2-50);
   orthoplex = new Orthoplex(height/2-50);
+  hyper_diamond = new Hyper_diamond(height/4);
+  tetraplex = new Tetraplex(height/3);
   
-  figures = [pentachoron, tesseract, orthoplex];
+  figures = [pentachoron, tesseract, orthoplex, hyper_diamond, tetraplex];
   index = 0;
   noStroke();
 }
@@ -45,9 +47,16 @@ function keyPressed(){
   }else if(keyCode === LEFT_ARROW){
     index -= 1;
     index = index % figures.length;
+    if(index<0){
+      index+=figures.length;
+    }
   }else if(keyCode === RIGHT_ARROW){
     index += 1;
     index = index % figures.length;
+  }else if(key === "+" && projector.mode === 2){
+    projector.distance += 0.5;
+  }else if(key === "-" && projector.mode === 2){
+    projector.distance -= 0.5;
   }
 }
 
