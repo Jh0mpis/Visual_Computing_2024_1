@@ -10,8 +10,9 @@ function setup() {
   orthoplex = new Orthoplex(height/2-50);
   hyper_diamond = new Hyper_diamond(height/4);
   tetraplex = new Tetraplex(height/3);
+  dodecaplex = new Dodecaplex(height/4);
   
-  figures = [pentachoron, tesseract, orthoplex, hyper_diamond, tetraplex];
+  figures = [pentachoron, orthoplex, tesseract, hyper_diamond, tetraplex, dodecaplex];
   index = 0;
   noStroke();
 }
