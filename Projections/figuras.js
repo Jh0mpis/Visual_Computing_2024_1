@@ -25,12 +25,12 @@ class Figure{
   }
   
   render(){
-    for(let j = 0; j < this.projected.length; j++){
+    /*for(let j = 0; j < this.projected.length; j++){
        push();
        translate(this.projected[j][0], this.projected[j][1], this.projected[j][2]);
        sphere(5);
        pop();
-    }
+    }*/
     for(let i = 0; i < this.connections.length; i++){
       this.connect(this.connections[i][0], this.connections[i][1], this.projected);
     }
@@ -333,6 +333,22 @@ class Dodecaplex extends Figure{constructor(scl){
   }
 }
 
-class Four_sphere extends Figure{
-  
+class Hypersphere extends Figure{
+  constructor(scl){
+    let div = 10;
+    
+    super(scl, 1);
+
+    for(let theta1 = 0; theta1 < PI; theta1 += PI/div){
+      for(let theta2 = 0; theta2 < PI; theta2 += PI/div){
+        for(let theta3 = 0; theta3 < 2*PI; theta3 += 2*PI/div){
+          this.points.push([[cos(theta1)], [sin(theta1)*cos(theta2)], [sin(theta1)*sin(theta2)*cos(theta3)], [sin(theta1)*sin(theta2)*sin(theta3)]]);
+        }
+      }
+    }
+    
+    for(let i = 0; i<this.points.length - 1 ; i++){
+      this.connections.push([i, i+1])
+    }
+  }
 }

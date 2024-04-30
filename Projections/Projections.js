@@ -1,9 +1,10 @@
 let axis = [false, false, false, false, false, false]
-var projector, pentachoron, tesseract;
+var projector, pentachoron, tesseract, orthoplex, hyper_diamond, tetraplex, dodecaplex, hypersphere;
 let figures, index;
 
 function setup() {
   createCanvas(680, 680, WEBGL);
+  
   projector = new Projector();
   pentachoron = new Pentachoron(height/2-50);
   tesseract = new Tesseract(height/2-50);
@@ -11,8 +12,9 @@ function setup() {
   hyper_diamond = new Hyper_diamond(height/4);
   tetraplex = new Tetraplex(height/3);
   dodecaplex = new Dodecaplex(height/4);
+  hypersphere = new Hypersphere(height/2-50);
   
-  figures = [pentachoron, orthoplex, tesseract, hyper_diamond, tetraplex, dodecaplex];
+  figures = [pentachoron, orthoplex, tesseract, hyper_diamond, tetraplex, dodecaplex, hypersphere];
   index = 0;
   noStroke();
 }
