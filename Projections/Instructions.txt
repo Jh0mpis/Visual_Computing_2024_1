@@ -1,0 +1,23 @@
+The following program is a rendering of different 4D regular polytopes projecting it in 3D.
+
+We render all the regular polytopes and try to render an hypersphere, that fail in the conections, but is an interesting figure.
+
+The figures can rotate in each plane of the 4D space. You can activate the rotation using the numerical keys, we have the following map:
+
+1: Rotation around xy plane
+2: Rotation around xz plane
+3: Rotation around xw plane
+4: Rotation around yz plane
+5: Rotation around yw plane
+6: Rotation around zw plane
+
+Where we use the (x, y, z, w) notation in 4D. For example press 1 and 2 rotate the 4D figure in the planes xy and xz at the same time.
+
+To switch the figure you can use the arrows, the change is cyclic.
+You also can switch the projection methood, you can use de keys:
+
+o: Orthographic
+p: Perspective
+
+Finally, you can set the distance of the camera in the perspective view using '+' and '-' keys to zoom out and zoom in respectively.
+

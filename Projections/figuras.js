@@ -25,12 +25,12 @@ class Figure{
   }
   
   render(){
-    /*for(let j = 0; j < this.projected.length; j++){
+    for(let j = 0; j < this.projected.length; j++){
        push();
        translate(this.projected[j][0], this.projected[j][1], this.projected[j][2]);
        sphere(5);
        pop();
-    }*/
+    }
     for(let i = 0; i < this.connections.length; i++){
       this.connect(this.connections[i][0], this.connections[i][1], this.projected);
     }

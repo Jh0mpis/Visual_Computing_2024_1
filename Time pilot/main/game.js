@@ -1,6 +1,7 @@
 class Game{
   constructor(){
     this.player = new Player(player_imgs, bullet_imgs);
+    this.is_tutorial = true;
     this.is_game_over = false;
     this.is_paused = false;
     for(let i = 0; i< num_clouds; i++){
@@ -132,5 +133,47 @@ class Game{
       image(heart,50+i*45,70,40+3*sin(frameCount/10),40+3*sin(frameCount/10));
     }
     pop();
-}
+  }
+  
+  tutorial(){
+    background(0);
+    textAlign(CENTER);
+    textSize(32);
+    textFont(font);
+    fill(255, 0, 0);
+    text("TIME PILOT", width/2, 85);
+    fill(255);
+    text("Game developed by", width/2, 115);
+    text("Jhon Sebastian Moreno Triana", width/2, 145);
+    text("Andres Felipe Rojas Aguilar", width/2, 175);
+    text("Sergio Andres Ruiz Herrera", width/2, 205);
+    fill(0, 0, 255);
+    text("TUTORIAL", width/2, 260);
+    
+    if(this.player.count_frames <59.4){
+      this.player.count_frames += 0.5;
+    }else{
+      this.player.count_frames = 0;
+    }
+    
+    push();
+    translate(width/2, 350);
+    rotate(frameCount/50);
+    image(this.player.imgs[Math.floor(this.player.count_frames)], 0, 0, this.player.size, this.player.size);
+    pop();
+    
+    image(keys[0][(Math.floor((frameCount/50)/(PI/2)%4)+2)%4 == 0 ? 1 : 0], width/2, 450, this.player.size, this.player.size);
+    image(keys[1][(Math.floor((frameCount/50)/(PI/2)%4)+2)%4 == 1 ? 1 : 0], width/2+this.player.size+10, 450+this.player.size+10, this.player.size, this.player.size);
+    image(keys[2][(Math.floor((frameCount/50)/(PI/2)%4)+2)%4 == 2 ? 1 : 0], width/2, 450+this.player.size+10, this.player.size, this.player.size);
+    image(keys[3][(Math.floor((frameCount/50)/(PI/2)%4)+2)%4 == 3 ? 1 : 0], width/2-this.player.size-10, 450+this.player.size+10, this.player.size, this.player.size);
+    
+    fill(255);
+    text("Evade and kill Enemies", width/2, 600);
+    image(enemy_imgs[Math.floor(frameCount/2)%16], width/2+25*sin(frameCount/10), 700+20*sin(frameCount/30), this.player.size, this.player.size);
+    fill(255,0,0);
+    text("And Survive", width/2, 800);
+    fill(255);
+    text("You can Pause with ESC.", width/2, height-100);
+    text("Press ENTER to continue.", width/2, height-50);
+  }
 }
